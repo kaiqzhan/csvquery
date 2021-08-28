@@ -1,8 +1,10 @@
 package datatable
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // DataTable stores the column titles and rows of data.
@@ -37,6 +39,31 @@ func (dt *DataTable) AppendRow(row DataRow) error {
 
 	dt.Rows = append(dt.Rows, row)
 	return nil
+}
+
+// String return the content of the data table in csv format
+func (dt *DataTable) String() string {
+	var buffer bytes.Buffer
+
+	// print columns
+	columnNames := make([]string, 0, len(dt.Columns))
+	for _, col := range dt.Columns {
+		columnNames = append(columnNames, col.Name)
+	}
+	buffer.WriteString(strings.Join(columnNames, ","))
+	buffer.WriteString("\n")
+
+	// print rows
+	for _, row := range dt.Rows {
+		datas := make([]string, 0, len(row.Items))
+		for _, item := range row.Items {
+			datas = append(datas, item.Data)
+		}
+		buffer.WriteString(strings.Join(datas, ","))
+		buffer.WriteString("\n")
+	}
+
+	return buffer.String()
 }
 
 // columnIndexByName returns the index of the column with the title columnName.
@@ -84,7 +111,9 @@ func (dt *DataTable) rowIndexMapByColumn(columnIndex int) map[string]int {
 
 	for i, row := range dt.Rows {
 		data := row.Items[columnIndex].Data
-		rowIndexMap[data] = i
+		if _, ok := rowIndexMap[data]; !ok {
+			rowIndexMap[data] = i // only add the first occurance
+		}
 	}
 
 	return rowIndexMap

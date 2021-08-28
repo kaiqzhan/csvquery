@@ -115,6 +115,18 @@ func TestDataTableAppendOverMaxRows(t *testing.T) {
 	}
 }
 
+func TestDataTableString(t *testing.T) {
+	fromTable := newTestTable()
+
+	expect := "Column1,Column2,Column3\nA,B,1\nC,D,2\n"
+
+	actual := fromTable.String()
+
+	if actual != expect {
+		t.Errorf("expect: %s, got: %s", expect, actual)
+	}
+}
+
 func TestDataRowAppendItem(t *testing.T) {
 	fromRow := datatable.DataRow{}
 
