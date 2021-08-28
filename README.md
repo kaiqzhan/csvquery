@@ -47,7 +47,7 @@ Each group takes an input table and produces an output table, except `FROM` whic
 
 The core engine of this program is the `DataTable` struct, which stores all the content of a table in memory. The data structure supports `Select()`, `Take()`, `OrderBy()`, `Join()`, `CountBy()` methods which transforms the table to the desired output.
 
-At the end, it just print out the data table in a formatted way.
+At the end, it just print out the last data table in a formatted way.
 
 ## Design Decisions
 - Schema vs No schema
@@ -62,3 +62,72 @@ At the end, it just print out the data table in a formatted way.
     - Loading all the CSV files to memory when program started can save many time if we're running a lot of queries. For simplicity, I only implemented loading at each query. This is a place can be improved in the future.
 - Maximum table size
     - Maximum table size was calculated based on memory size. Assume each entry is a string less or equal to 5 characters, so it concumes ~10 bytes. `10G * 100 cols * 100000 rows = 1GB`, which can fit into almost any morden computers.
+
+## Test Output
+Please check `cli/cli_test.go` for the table driven E2E tests.
+```
+=== RUN   TestQuery
+--- PASS: TestQuery (0.06s)
+=== RUN   TestQueryNotStartsWithFrom
+--- PASS: TestQueryNotStartsWithFrom (0.00s)
+=== RUN   TestQueryInvalidCommand
+--- PASS: TestQueryInvalidCommand (0.00s)
+=== RUN   TestQueryInsufficientParameters
+--- PASS: TestQueryInsufficientParameters (0.00s)
+PASS
+ok      github.com/kaiqzhan/csvquery/cli        (cached)
+=== RUN   TestImport
+--- PASS: TestImport (0.00s)
+PASS
+ok      github.com/kaiqzhan/csvquery/csv        (cached)
+=== RUN   TestDataTableCountBy
+--- PASS: TestDataTableCountBy (0.00s)
+=== RUN   TestDataTableCountByInvalidColumnName
+--- PASS: TestDataTableCountByInvalidColumnName (0.00s)
+=== RUN   TestDataTableInit
+--- PASS: TestDataTableInit (0.00s)
+=== RUN   TestDataTableInitZeroColumns
+--- PASS: TestDataTableInitZeroColumns (0.00s)
+=== RUN   TestDataTableInitOverMaxColumns
+--- PASS: TestDataTableInitOverMaxColumns (0.00s)
+=== RUN   TestDataTableAppendRow
+--- PASS: TestDataTableAppendRow (0.00s)
+=== RUN   TestDataTableAppendInvalidRowSize
+--- PASS: TestDataTableAppendInvalidRowSize (0.00s)
+=== RUN   TestDataTableAppendOverMaxRows
+--- PASS: TestDataTableAppendOverMaxRows (0.02s)
+=== RUN   TestDataTableString
+--- PASS: TestDataTableString (0.00s)
+=== RUN   TestDataRowAppendItem
+--- PASS: TestDataRowAppendItem (0.00s)
+=== RUN   TestDataRowAppendItemOverMaxColumns
+--- PASS: TestDataRowAppendItemOverMaxColumns (0.00s)
+=== RUN   TestDataTableJoin
+--- PASS: TestDataTableJoin (0.00s)
+=== RUN   TestDataTableJoinColumnMissingOnLeftTable
+--- PASS: TestDataTableJoinColumnMissingOnLeftTable (0.00s)
+=== RUN   TestDataTableJoinColumnMissingOnRightTable
+--- PASS: TestDataTableJoinColumnMissingOnRightTable (0.00s)
+=== RUN   TestDataTableJoinNoMatchingOnRightTable
+--- PASS: TestDataTableJoinNoMatchingOnRightTable (0.00s)
+=== RUN   TestDataTableOrderBy
+--- PASS: TestDataTableOrderBy (0.00s)
+=== RUN   TestDataTableOrderByInvalidColumnName
+--- PASS: TestDataTableOrderByInvalidColumnName (0.00s)
+=== RUN   TestDataTableOrderByNonNumericColumn
+--- PASS: TestDataTableOrderByNonNumericColumn (0.00s)
+=== RUN   TestDataTableSelect
+--- PASS: TestDataTableSelect (0.00s)
+=== RUN   TestDataTableSelectInvalidColumnName
+--- PASS: TestDataTableSelectInvalidColumnName (0.00s)
+=== RUN   TestDataTableSelectEmptyColumnNames
+--- PASS: TestDataTableSelectEmptyColumnNames (0.00s)
+=== RUN   TestDataTableTake
+--- PASS: TestDataTableTake (0.00s)
+=== RUN   TestDataTableTakeZero
+--- PASS: TestDataTableTakeZero (0.00s)
+=== RUN   TestDataTableTakeMoreThanAll
+--- PASS: TestDataTableTakeMoreThanAll (0.00s)
+PASS
+ok      github.com/kaiqzhan/csvquery/datatable  (cached)
+```
